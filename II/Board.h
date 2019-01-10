@@ -20,6 +20,7 @@ private:
 
 	Pointer pointer = Pointer(2, 2);
 
+	void printRules(int line);
 	void prepareBord();
 	std::string randWord();
 public:

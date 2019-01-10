@@ -4,15 +4,28 @@ int maxFive = 1368;
 
 void Board::printBoard()
 {
-	system("cls");
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	for (int i = 0; i < 5; i++) {
+		std::cout << "	";
 		for (int j = 0; j < 5; j++) {
 			if (i == pointer.x && j == pointer.y) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 2));
 			else SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 15));
 			std::cout << board[i][j];
+			if (i == 4 || j == 4) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 15));
 		}
+		printRules(i);
 		std::cout << std::endl;
+	}
+}
+
+void Board::printRules(int line)
+{
+	if (line == 0) {
+		std::cout << "		ѕередвигайте указатель с помощью стрелочек";
+	} else if (line == 1) {
+		std::cout << "		ƒл€ ввода буквы выберите нужную €чейку, а затем нажмите нужную букву";
+	}else if (line == 3) {
+		std::cout << "		ƒл€ выхода из игры нажмите 'del'";
 	}
 }
 

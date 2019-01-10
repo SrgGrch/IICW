@@ -14,6 +14,10 @@ private:
 	Player player2;
 	Board board;
 
+	int currentPlayer = 1;
+
+	void printTurn();
+	void getMoveDirection();
 	void setPlayers();
 	void printBoard();
 	void printScoreBoard();
