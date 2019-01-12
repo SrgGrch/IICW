@@ -1,69 +1,65 @@
 #include "Board.h"
 
-int maxFive = 1368;
-int maxWords = 34010;
 
 bool Board::checkWord(int turn)
 {
-	std::string tmp = "";
-	std::ifstream in;
-	in.open(fileName);
-	//if (tmpWord.find("*") == std::string::npos) return false;
-	int i;
-	for (i = 0; i < maxWords - 1; i++) {
-		getline(in, tmp);
-		if (!tmpWord.compare(tmp)) {
-			for (auto w : words) {
-				if (w.getWord() == tmpWord) return false;
-			}
-			std::cout << "OK";
-			words.push_back(Word(tmp, turn));
-			isHighlighting = false;
-			tmpWord.clear();
-			return true;
-		}
-		tmp.clear();
-	}
-	std::cout << i;
-	tmp.clear();
-	in.close();
+	std::string tmp = ""; // Временная строка
+	std::ifstream in; // Поток ввода
+	in.open(fileName); // Открываем словарь
 
-	board[tmpPosition.x][tmpPosition.y] = '*';
-	stopHighlighting();
-	return false;
+	for (int i = 0; i < maxWords - 1; i++) { // Ищем слово в словаре
+		getline(in, tmp); // Запись с потока ввода
+		if (!tmpWord.compare(tmp)) {  //Если существует
+			for (auto w : words) { // Проверяем было ли оно уже введено другим игроком
+				if (w.getWord() == tmpWord) return false; // Если было, слово не прошло проверку
+			}
+			words.push_back(Word(tmp, turn)); // Если не было, записываем в вектор (Массив) с истрией слов
+			isHighlighting = false; // Заканичваем выделение
+			tmpWord.clear(); // Отчищаем вспомогательную строку
+			return true; // Слово прошло проверку
+		}
+		tmp.clear(); 
+	}
+	// Если не не существует
+	tmp.clear(); // Отчистка временной строки
+	in.close(); // Закрытие словаря
+
+	board[tmpPosition.x][tmpPosition.y] = '*'; // Сброс введенного символа
+	stopHighlighting(); // Остановка выделения
+	return false; // Слово не прошло проверку
+
 }
 
-void Board::highlightWord(bool del, int dir)
+void Board::highlightWord(bool del, int dir) // Выделение ячейки
 {
-	if (checkPointer(dir)) {
-		//tmpWord.substr(0, tmpWord.size() - 1);
-		if (tmpWord.size() > 0)  tmpWord.resize(tmpWord.size() - 1);
+	if (checkPointer(dir)) { // Проверка на отмену выделения
+		if (tmpWord.size() > 0)  tmpWord.resize(tmpWord.size() - 1); // отменяем изменения в вспомогательной строке
 		choseBoard[pointer.x][pointer.y] = false;
 		movePointer(dir);
-	} else {
-		movePointer(dir);
-		tmpWord += board[pointer.x][pointer.y];
-		choseBoard[pointer.x][pointer.y] = true;
+	} else { // Если не отменяем
+		movePointer(dir); // Перемещение курсора
+		tmpWord += board[pointer.x][pointer.y]; // Добавление буквы в вспомогательную строку
+		choseBoard[pointer.x][pointer.y] = true; 
 
 	}
 }
 
-void Board::printBoard()
+void Board::printBoard() // Вывод доски
 {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // Для выделения цветом символов
 	for (int i = 0; i < 5; i++) {
 		std::cout << "	";
 		for (int j = 0; j < 5; j++) {
-			if (i == pointer.x && j == pointer.y) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 2));
+			if (i == pointer.x && j == pointer.y) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 2)); // Выделение указателя
 			else SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 15));
 
-			if (choseBoard[i][j]) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 5));
+			if (choseBoard[i][j]) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 5)); // Выделение при выделении слова
 			else if (isHighlighting) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 15));
 
 			std::cout << board[i][j];
 			if (i == 4 || j == 4) SetConsoleTextAttribute(hConsole, (WORD)((0 << 3) | 15));
 		}
-		printRules(i);
+		printRules(i); // Вывод правил
 		std::cout << std::endl;
 	}
 }
@@ -104,23 +100,19 @@ std::string Board::randWord()
 	int pos = rand() % maxFive + 1;
 	std::string tmp = "";
 	std::ifstream in;
-	char *tmpstr = new char[100];
 	in.open(fileNameFive);
 	for (int i = 0; i < pos - 1; i++) {
-		in.getline(tmpstr, 100, '\n');
+		getline(in, tmp);
 	}
-	in.getline(tmpstr, 100, '\n');
-	tmp.clear();
-	tmp = tmpstr;
+	getline(in, tmp);
 	in.close();
 	words.push_back(Word(tmp, 0));
-	delete tmpstr;
 	return tmp;
 }
 
 Board::Board()
 {
-	srand(time(0));
+	srand(time(0)); // Для функции rand
 	prepareBord();
 	std::string word = randWord();
 	for (int i = 0; i < 5; i++) {
@@ -145,6 +137,7 @@ void Board::setCharacter(char ch)
 
 void Board::movePointer(int dir)
 {
+	// Проверка на "Стенки"
 	if (dir == LEFT && pointer.y > 0) pointer.y--;
 	else if (dir == RIGHT && pointer.y < 4) pointer.y++;
 	else if (dir == DOWN && pointer.x < 4) pointer.x++;
@@ -153,6 +146,7 @@ void Board::movePointer(int dir)
 }
 bool Board::checkPointer(int dir)
 {
+	// Проверка на стенки и на "отмену"
 	if (dir == LEFT && pointer.y > 0) return choseBoard[pointer.x][pointer.y - 1];
 	else if (dir == RIGHT && pointer.y < 4) return choseBoard[pointer.x][pointer.y + 1];
 	else if (dir == DOWN && pointer.x < 4) return choseBoard[pointer.x + 1][pointer.y];

@@ -8,6 +8,27 @@ void GameSession::printBoard()
 	printScoreBoard();
 }
 
+void GameSession::endGame()
+{
+	system("cls");
+	std::cout << std::endl << std::endl << std::endl << std::endl << "					";
+	if (player1.getScore() > player2.getScore()) std::cout << "Победил игрок " << player1.name << " ";
+	else if (player1.getScore() < player2.getScore()) std::cout << "Победил игрок " << player2.name << " ";
+	else std::cout << "Ничья";
+	printScoreBoard();
+}
+
+void GameSession::skipTurn()
+{
+	draw++;
+	if (currentPlayer == 1) {
+		currentPlayer = 2;
+	} else {
+		currentPlayer = 1;
+	}
+	printBoard();
+}
+
 void GameSession::printScoreBoard()
 {
 	std::cout << std::endl << "	" << player1.name << " " << player1.getScore() << "		" << player2.name << " " << player2.getScore() << std::endl;
@@ -106,20 +127,29 @@ void GameSession::run()
 {
 	bool isActive = false;
 	while (true) {
+
 		isActive = GetConsoleWindow() == GetForegroundWindow();
 		getMoveDirection();
+
+		if (busyCells == 25 || draw == 6) {
+			endGame();
+			break;
+		}
+
 		if (GetAsyncKeyState(VK_END) && isActive)
 		{
 			insertCh();
-		} else if (GetAsyncKeyState(VK_MENU) && isActive)
+		} else if (GetAsyncKeyState(VK_MENU) && isActive && isInserted)
 		{
 			highlightWord();
 
+		}else if (GetAsyncKeyState(VK_HOME) && isActive)
+		{
+			skipTurn();
 		} else if (GetAsyncKeyState(VK_DELETE) && isActive)
 		{
 			break;
 		}
-
 		Sleep(200);
 	}
 }
@@ -144,6 +174,8 @@ void GameSession::highlightWord()
 					player2.addScore();
 					currentPlayer = 1;
 				}
+				draw = 0;
+				busyCells++;
 				isHighlighting = false;
 			}
 			isHighlighting = board.getHighlighting();
@@ -151,6 +183,7 @@ void GameSession::highlightWord()
 		Sleep(200);
 	}
 	board.stopHighlighting();
+	isInserted = false;
 	printBoard();
 
 }
@@ -163,6 +196,7 @@ void GameSession::insertCh() {
 	printTurn();
 	board.printBoard();
 	printScoreBoard();
+	isInserted = true;
 }
 
 void GameSession::setPlayerFirst(std::string name)

@@ -4,12 +4,12 @@
 class Player {
 
 private:
-	int id;
-	int score = 0;
-	int color;
+	int id; // ID игрока
+	int score = 0; // счет игрока
+	int color; // unused
 public:
-	Player(int _id, std::string _name, int _score, int _color): id(_id), name(_name), score(_score), color(_color) {};
-	Player() {};
+	Player(int _id, std::string _name, int _score, int _color): id(_id), name(_name), score(_score), color(_color) {}; 
+	Player() {}; 
 	std::string name = "";
 	int getId();
 	int getScore();
