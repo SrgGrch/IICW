@@ -10,6 +10,11 @@ int Player::getScore()
 	return score;
 }
 
+void Player::addScore()
+{
+	score++;
+}
+
 std::string Player::getName()
 {
 	return name;

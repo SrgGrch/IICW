@@ -4,13 +4,13 @@ void GameSession::printBoard()
 {
 	system("cls");
 	printTurn();
-	printScoreBoard();
 	board.printBoard();
+	printScoreBoard();
 }
 
 void GameSession::printScoreBoard()
 {
-	std::cout << std::endl << "	" << player1.name << "		" << player2.name;
+	std::cout << std::endl << "	" << player1.name << " " << player1.getScore() << "		" << player2.name << " " << player2.getScore() << std::endl;
 }
 
 void GameSession::printTurn()
@@ -22,30 +22,72 @@ void GameSession::printTurn()
 
 void GameSession::getMoveDirection()
 {
-	if (GetAsyncKeyState(VK_LEFT))
+	bool isActive = GetConsoleWindow() == GetForegroundWindow();
+	if (GetAsyncKeyState(VK_LEFT) && isActive)
 	{
 		system("cls");
-		printTurn();
 		board.movePointer(LEFT);
-		printScoreBoard();
-	} else if (GetAsyncKeyState(VK_RIGHT))
+		printBoard();
+	} else if (GetAsyncKeyState(VK_RIGHT) && isActive)
 	{
 		system("cls");
-		printTurn();
 		board.movePointer(RIGHT);
-		printScoreBoard();
-	} else if (GetAsyncKeyState(VK_DOWN))
+		printBoard();
+	} else if (GetAsyncKeyState(VK_DOWN) && isActive)
 	{
 		system("cls");
-		printTurn();
 		board.movePointer(DOWN);
-		printScoreBoard();
-	} else if (GetAsyncKeyState(VK_UP))
+		printBoard();
+	} else if (GetAsyncKeyState(VK_UP) && isActive)
 	{
 		system("cls");
-		printTurn();
 		board.movePointer(UP);
-		printScoreBoard();
+		printBoard();
+	}
+}
+
+void GameSession::getHighlightDirection(int &tmpDir)
+{
+	bool isActive = GetConsoleWindow() == GetForegroundWindow();
+	if (GetAsyncKeyState(VK_LEFT) && isActive)
+	{
+		system("cls");
+		if (RIGHT == tmpDir) board.highlightWord(true, LEFT);
+		else {
+			board.highlightWord(false, LEFT);
+			tmpDir = LEFT;
+		}
+		printBoard();
+
+	} else if (GetAsyncKeyState(VK_RIGHT) && isActive)
+	{
+		system("cls");
+		if (LEFT == tmpDir) board.highlightWord(true, RIGHT);
+		else {
+			board.highlightWord(false, RIGHT);
+			tmpDir = RIGHT;
+		}
+		printBoard();
+
+	} else if (GetAsyncKeyState(VK_DOWN) && isActive)
+	{
+		system("cls");
+		if (UP == tmpDir) board.highlightWord(true, DOWN);
+		else {
+			board.highlightWord(false, DOWN);
+			tmpDir = DOWN;
+		}
+		printBoard();
+
+	} else if (GetAsyncKeyState(VK_UP) && isActive)
+	{
+		system("cls");
+		if (DOWN == tmpDir) board.highlightWord(true, UP);
+		else {
+			board.highlightWord(false, UP);
+			tmpDir = UP;
+		}
+		printBoard();
 	}
 }
 
@@ -62,14 +104,65 @@ void GameSession::setPlayers()
 
 void GameSession::run()
 {
+	bool isActive = false;
 	while (true) {
+		isActive = GetConsoleWindow() == GetForegroundWindow();
 		getMoveDirection();
-		if (GetAsyncKeyState(VK_DELETE))
+		if (GetAsyncKeyState(VK_END) && isActive)
+		{
+			insertCh();
+		} else if (GetAsyncKeyState(VK_MENU) && isActive)
+		{
+			highlightWord();
+
+		} else if (GetAsyncKeyState(VK_DELETE) && isActive)
 		{
 			break;
 		}
+
 		Sleep(200);
 	}
+}
+
+void GameSession::highlightWord()
+{
+	bool isActive = false;
+	int tmpDir = -1;
+	int dir = -1;
+	bool isHighlighting = true;
+	board.startHighlighting();
+	while (isHighlighting) {
+		isActive = GetConsoleWindow() == GetForegroundWindow();
+		getHighlightDirection(tmpDir);
+		if (GetAsyncKeyState(VK_CONTROL) && isActive) {
+			if (board.checkWord(currentPlayer)) {
+				if (currentPlayer == 1) { 
+					player1.addScore(); 
+					currentPlayer = 2;
+				}
+				else {
+					player2.addScore();
+					currentPlayer = 1;
+				}
+				isHighlighting = false;
+			}
+			isHighlighting = board.getHighlighting();
+		}
+		Sleep(200);
+	}
+	board.stopHighlighting();
+	printBoard();
+
+}
+
+void GameSession::insertCh() {
+	char tmp;
+	std::cin >> tmp;
+	board.setCharacter(tmp);
+	system("cls");
+	printTurn();
+	board.printBoard();
+	printScoreBoard();
 }
 
 void GameSession::setPlayerFirst(std::string name)

@@ -13,11 +13,15 @@ private:
 	Player player1;
 	Player player2;
 	Board board;
+	int draw = 0;
 
 	int currentPlayer = 1;
-
+	
+	void highlightWord();
+	void insertCh();
 	void printTurn();
 	void getMoveDirection();
+	void getHighlightDirection(int &tmpDir);
 	void setPlayers();
 	void printBoard();
 	void printScoreBoard();
