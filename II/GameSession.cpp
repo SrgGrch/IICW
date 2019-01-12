@@ -10,6 +10,7 @@ void GameSession::printBoard()
 
 void GameSession::endGame()
 {
+	// Выявление победителя и вывод на экран
 	system("cls");
 	std::cout << std::endl << std::endl << std::endl << std::endl << "					";
 	if (player1.getScore() > player2.getScore()) std::cout << "Победил игрок " << player1.name << " ";
@@ -20,13 +21,13 @@ void GameSession::endGame()
 
 void GameSession::skipTurn()
 {
-	draw++;
-	if (currentPlayer == 1) {
+	draw++;  // Увелечение счетчика ничьи
+	if (currentPlayer == 1) { // Смена хода
 		currentPlayer = 2;
 	} else {
 		currentPlayer = 1;
-	}
-	printBoard();
+	} 
+	printBoard(); // Вывод на экран
 }
 
 void GameSession::printScoreBoard()
@@ -43,8 +44,8 @@ void GameSession::printTurn()
 
 void GameSession::getMoveDirection()
 {
-	bool isActive = GetConsoleWindow() == GetForegroundWindow();
-	if (GetAsyncKeyState(VK_LEFT) && isActive)
+	bool isActive = GetConsoleWindow() == GetForegroundWindow(); // Флаг, который сообщает нам о том, находится ли окно сейчас в "фокусе"
+	if (GetAsyncKeyState(VK_LEFT) && isActive) // Получение нажатой кнопки
 	{
 		system("cls");
 		board.movePointer(LEFT);
@@ -126,7 +127,7 @@ void GameSession::setPlayers()
 void GameSession::run()
 {
 	bool isActive = false;
-	while (true) {
+	while (true) { // Бесконечный цикл игры
 
 		isActive = GetConsoleWindow() == GetForegroundWindow();
 		getMoveDirection();
@@ -136,17 +137,17 @@ void GameSession::run()
 			break;
 		}
 
-		if (GetAsyncKeyState(VK_END) && isActive)
+		if (GetAsyncKeyState(VK_END) && isActive) // Ввод буквы
 		{
 			insertCh();
-		} else if (GetAsyncKeyState(VK_MENU) && isActive && isInserted)
+		} else if (GetAsyncKeyState(VK_MENU) && isActive && isInserted) // Выделение
 		{
 			highlightWord();
 
-		}else if (GetAsyncKeyState(VK_HOME) && isActive)
-		{
+		}else if (GetAsyncKeyState(VK_HOME) && isActive) // Пропуск хода 
+		{ 
 			skipTurn();
-		} else if (GetAsyncKeyState(VK_DELETE) && isActive)
+		} else if (GetAsyncKeyState(VK_DELETE) && isActive) // Выход из игры
 		{
 			break;
 		}
@@ -158,7 +159,6 @@ void GameSession::highlightWord()
 {
 	bool isActive = false;
 	int tmpDir = -1;
-	int dir = -1;
 	bool isHighlighting = true;
 	board.startHighlighting();
 	while (isHighlighting) {
@@ -189,7 +189,7 @@ void GameSession::highlightWord()
 }
 
 void GameSession::insertCh() {
-	char tmp;
+	char tmp; 
 	std::cin >> tmp;
 	board.setCharacter(tmp);
 	system("cls");
