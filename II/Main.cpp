@@ -9,5 +9,6 @@ int main(){
 	SetConsoleCP(1251);		  //
 	GameSession g; // —оздание игровой сессии
 	g.run(); // запуск игровой сесии
+	system("pause");
 	return 0;
 }
