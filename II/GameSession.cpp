@@ -157,26 +157,26 @@ void GameSession::run()
 
 void GameSession::highlightWord()
 {
-	bool isActive = false;
-	int tmpDir = -1;
-	bool isHighlighting = true;
-	board.startHighlighting();
-	while (isHighlighting) {
-		isActive = GetConsoleWindow() == GetForegroundWindow();
-		getHighlightDirection(tmpDir);
-		if (GetAsyncKeyState(VK_CONTROL) && isActive) {
-			if (board.checkWord(currentPlayer)) {
-				if (currentPlayer == 1) { 
-					player1.addScore(); 
+	bool isActive = false; // Окно в фокусе?
+	int tmpDir = -1; 
+	bool isHighlighting = true; 
+	board.startHighlighting(); // Начало выделения
+	while (isHighlighting) { // Пока выделеляется
+		isActive = GetConsoleWindow() == GetForegroundWindow(); // Проверить в фокусе ли окно
+		getHighlightDirection(tmpDir); // Получить направление перемещения курсора
+		if (GetAsyncKeyState(VK_CONTROL) && isActive) { // Если нажат ctrl и окно в фокусе
+			if (board.checkWord(currentPlayer)) { // Если слово прошло проверку
+				if (currentPlayer == 1) { // Начислить очки и отдать ход следующему игроку 
+					player1.addScore();  
 					currentPlayer = 2;
 				}
 				else {
 					player2.addScore();
 					currentPlayer = 1;
 				}
-				draw = 0;
-				busyCells++;
-				isHighlighting = false;
+				draw = 0; // Сброс счетчика ничьи
+				busyCells++; // Увеличение кол-ва занятых ячеек
+				isHighlighting = false; // Остановить выделение
 			}
 			isHighlighting = board.getHighlighting();
 		}
