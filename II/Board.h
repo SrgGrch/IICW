@@ -11,10 +11,10 @@
 class Board {
 
 private:
+	const std::string fileName = "Dictionary/words.txt"; // Путь до словаря
+	const std::string fileNameFive = "Dictionary/wordsFive.txt"; // Путь до словаря с начальными словами
 	char board[5][5]; // Массив символом доски
 	bool choseBoard[5][5]; // Вспомогательный массив для выделения слова
-	std::string fileName = "Dictionary/words.txt"; // Путь до словаря
-	std::string fileNameFive = "Dictionary/wordsFive.txt"; // Путь до словаря с начальными словами
 	std::string tmpWord; // Вспомогательная строка для выделяемого слова
 	std::vector<Word> words; // Массив всех введенных слов
 	bool isHighlighting = false; // Флаг, который говорит о том, идет ли сейчас выделение

@@ -128,7 +128,7 @@ bool Board::getHighlighting()
 
 void Board::setCharacter(char ch)
 {
-	if (pointer.x != 2) {
+	if (pointer.x != 2 && board[pointer.x][pointer.y] == '*') {
 		board[pointer.x][pointer.y] = ch;
 		tmpPosition.x = pointer.x;
 		tmpPosition.y = pointer.y;

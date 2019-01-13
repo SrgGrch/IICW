@@ -12,11 +12,12 @@ void GameSession::endGame()
 {
 	// Выявление победителя и вывод на экран
 	system("cls");
-	std::cout << std::endl << std::endl << std::endl << std::endl << "					";
+	std::cout << std::endl << std::endl << std::endl << std::endl << "			";
 	if (player1.getScore() > player2.getScore()) std::cout << "Победил игрок " << player1.name << " ";
 	else if (player1.getScore() < player2.getScore()) std::cout << "Победил игрок " << player2.name << " ";
 	else std::cout << "Ничья";
 	printScoreBoard();
+	system("pause");
 }
 
 void GameSession::skipTurn()
@@ -130,12 +131,14 @@ void GameSession::run()
 	while (true) { // Бесконечный цикл игры
 
 		isActive = GetConsoleWindow() == GetForegroundWindow();
-		getMoveDirection();
-
+		
 		if (busyCells == 25 || draw == 6) {
 			endGame();
 			break;
 		}
+
+		getMoveDirection();
+
 
 		if (GetAsyncKeyState(VK_END) && isActive) // Ввод буквы
 		{
